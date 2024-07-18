@@ -1,11 +1,14 @@
+// Libraries
 import React from "react";
 import clsx from "clsx";
-import { Piece, EmptyPiece, isAdjacent } from "@/utils/puzzle";
+
+// Components
 import PuzzlePiece from "./PuzzlePiece";
 
+// Utils
+import { Piece, EmptyPiece, GRID_SIZE } from "@/utils/puzzle";
+
 interface PuzzleGridProps {
-  gridSize: number;
-  containerSize: number;
   pieces: Piece[];
   emptyPiece: EmptyPiece;
   imageUrl: string;
@@ -14,28 +17,24 @@ interface PuzzleGridProps {
 }
 
 const PuzzleGrid: React.FC<PuzzleGridProps> = ({
-  gridSize,
-  containerSize,
   pieces,
   emptyPiece,
   imageUrl,
   solved,
   onPieceClick,
 }) => {
-  const pieceSize = containerSize / gridSize;
-
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+        gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
       }}
       className={clsx(
-        `grid grid-cols-4 grid-cols-${gridSize} gap-[2px] size-96 border-2 border-black`
+        `grid grid-cols-4 grid-cols-${GRID_SIZE} gap-[2px] size-96 border-2 border-black`
       )}
     >
-      {[...Array(gridSize)].map((_, y) =>
-        [...Array(gridSize)].map((_, x) => {
+      {[...Array(GRID_SIZE)].map((_, y) =>
+        [...Array(GRID_SIZE)].map((_, x) => {
           const piece = pieces.find(
             (p) => p.currentX === x && p.currentY === y
           );
@@ -48,8 +47,6 @@ const PuzzleGrid: React.FC<PuzzleGridProps> = ({
               isEmpty={isEmpty}
               emptyPiece={emptyPiece}
               imageUrl={imageUrl}
-              pieceSize={pieceSize}
-              containerSize={containerSize}
               solved={solved}
               onPieceClick={onPieceClick}
             />

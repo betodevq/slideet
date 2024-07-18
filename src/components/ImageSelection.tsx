@@ -1,4 +1,8 @@
+// Libraries
 import React from "react";
+import Image from "next/image";
+
+// Utils
 import { trpc } from "@/utils/trpc";
 
 interface ImageSelectionProps {
@@ -21,10 +25,12 @@ const ImageSelection: React.FC<ImageSelectionProps> = ({ onImageSelect }) => {
             className="cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => onImageSelect(image.id)}
           >
-            <img
+            <Image
+              width={500}
+              height={500}
               src={image.url}
               alt={`Puzzle image ${index + 1}`}
-              className="w-48 h-48 object-cover"
+              objectFit="cover"
             />
           </div>
         ))}

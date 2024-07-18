@@ -1,8 +1,12 @@
 "use client";
-
+// Libraries
 import { useState } from "react";
-import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/navigation";
+
+// Utils
+import { trpc } from "@/utils/trpc";
+
+// Components
 import Image from "next/image";
 
 export default function Home() {

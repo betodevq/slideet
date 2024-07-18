@@ -1,6 +1,15 @@
 "use client";
 
+// Libraries
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+// Components
+import PuzzleGrid from "@/components/PuzzleGrid";
+import Image from "next/image";
+
+// Utils
+import { processImage } from "@/utils/imageProcessing";
 import {
   EmptyPiece,
   isPuzzleSolved,
@@ -9,28 +18,24 @@ import {
   shufflePieces,
   initializePieces,
   isAdjacent,
+  GRID_SIZE,
 } from "@/utils/puzzle";
-import { processImage } from "@/utils/imageProcessing";
-import PuzzleGrid from "@/components/PuzzleGrid";
-import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Game() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const encodedImageUrl = searchParams.get("url");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const gridSize = 4;
-  const [pieces, setPieces] = useState<Piece[]>([]);
-  const [emptyPiece, setEmptyPiece] = useState<EmptyPiece>({
-    x: gridSize - 1,
-    y: gridSize - 1,
-  });
-  const [solved, setSolved] = useState(false);
-  const containerSize = 500;
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [moveCount, setMoveCount] = useState(0);
+  const [pieces, setPieces] = useState<Piece[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [timePlayed, setTimePlayed] = useState(0);
+  const [moveCount, setMoveCount] = useState(0);
+  const [solved, setSolved] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const encodedImageUrl = searchParams.get("url");
+  const [emptyPiece, setEmptyPiece] = useState<EmptyPiece>({
+    x: GRID_SIZE - 1,
+    y: GRID_SIZE - 1,
+  });
 
   useEffect(() => {
     if (!encodedImageUrl) {
@@ -41,10 +46,10 @@ export default function Game() {
       processImage(url)
         .then((processedImageUrl) => {
           setImageUrl(processedImageUrl);
-          const newPieces = initializePieces(gridSize);
+          const newPieces = initializePieces(GRID_SIZE);
           const { shuffledPieces, newEmptyPiece } = shufflePieces({
             pieces: newPieces,
-            emptyPiece: { x: gridSize - 1, y: gridSize - 1 },
+            emptyPiece: { x: GRID_SIZE - 1, y: GRID_SIZE - 1 },
             shuffleMoves: 2,
           });
           setPieces(shuffledPieces);
@@ -58,7 +63,7 @@ export default function Game() {
           setIsLoading(false);
         });
     }
-  }, [encodedImageUrl, router, gridSize]);
+  }, [encodedImageUrl, router, GRID_SIZE]);
 
   useEffect(() => {
     if (!isLoading && !solved) {
@@ -112,8 +117,6 @@ export default function Game() {
       </div>
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
         <PuzzleGrid
-          gridSize={gridSize}
-          containerSize={containerSize}
           pieces={pieces}
           emptyPiece={emptyPiece}
           imageUrl={imageUrl}
@@ -121,7 +124,9 @@ export default function Game() {
           onPieceClick={handlePieceClick}
         />
         <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64">
-          <img
+          <Image
+            width={500}
+            height={500}
             src={imageUrl}
             alt="Puzzle Reference"
             className="w-full h-full object-cover"

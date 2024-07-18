@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import Provider from "@/components/Provider";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +21,7 @@ export default function RootLayout({
         <Provider>
           <section className="max-w-screen-lg p-8 mx-auto">
             <h1 className="text-6xl md:text-8xl font-bold mb-6 text-center">
-              Puzzlee
+              Slideet
             </h1>
             {children}
           </section>

@@ -1,8 +1,12 @@
 "use client";
 
+// Libraries
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
+// Components
 import Confetti from "react-confetti";
+import Image from "next/image";
 
 export default function GameOver() {
   const router = useRouter();
@@ -20,14 +24,8 @@ export default function GameOver() {
         height: window.innerHeight,
       });
     };
-
-    // Set initial size
     updateWindowSize();
-
-    // Add event listener
     window.addEventListener("resize", updateWindowSize);
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener("resize", updateWindowSize);
   }, []);
 
@@ -48,7 +46,9 @@ export default function GameOver() {
           {(Number(time) % 60).toString().padStart(2, "0")}!
         </p>
         {imageUrl && (
-          <img
+          <Image
+            width={500}
+            height={500}
             src={decodeURIComponent(imageUrl)}
             alt="Completed Puzzle"
             className="w-64 h-64 object-cover mb-6"

@@ -1,14 +1,21 @@
+// Libraries
 import React from "react";
 import clsx from "clsx";
-import { Piece, EmptyPiece, isAdjacent } from "@/utils/puzzle";
+
+// Utils
+import {
+  Piece,
+  EmptyPiece,
+  isAdjacent,
+  PIECE_SIZE,
+  CONTAINER_PX_SIZE,
+} from "@/utils/puzzle";
 
 interface PuzzlePieceProps {
   piece: Piece | undefined;
   isEmpty: boolean;
   emptyPiece: EmptyPiece;
   imageUrl: string;
-  pieceSize: number;
-  containerSize: number;
   solved: boolean;
   onPieceClick: (piece: Piece) => void;
 }
@@ -18,8 +25,6 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({
   isEmpty,
   emptyPiece,
   imageUrl,
-  pieceSize,
-  containerSize,
   solved,
   onPieceClick,
 }) => {
@@ -28,7 +33,7 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({
       onClick={() => !solved && piece && onPieceClick(piece)}
       className={clsx(
         "border-white border flex items-center justify-center cursor-pointer",
-        `w-[${pieceSize}px] h-[${pieceSize}px]`
+        `w-[${PIECE_SIZE}px] h-[${PIECE_SIZE}px]`
       )}
       style={{
         cursor:
@@ -37,10 +42,10 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({
             : "default",
         backgroundImage: isEmpty ? "none" : `url(${imageUrl})`,
         backgroundColor: isEmpty ? "salmon" : "transparent",
-        backgroundSize: `${containerSize}px ${containerSize}px`,
+        backgroundSize: `${CONTAINER_PX_SIZE}px ${CONTAINER_PX_SIZE}px`,
         backgroundPosition: piece
-          ? `${-piece.originalX * pieceSize}px ${
-              -piece.originalY * pieceSize
+          ? `${-piece.originalX * PIECE_SIZE}px ${
+              -piece.originalY * PIECE_SIZE
             }px`
           : "0 0",
       }}
