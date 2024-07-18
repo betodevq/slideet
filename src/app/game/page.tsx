@@ -17,6 +17,7 @@ interface EmptyPiece {
   y: number;
 }
 
+// Check if the puzzle is solved
 const isPuzzleSolved = (pieces: Piece[]) => {
   return pieces.every(
     (piece) =>
@@ -24,6 +25,7 @@ const isPuzzleSolved = (pieces: Piece[]) => {
   );
 };
 
+// Check if the clicked piece is adjacent to the empty piece
 const isAdjacent = (
   piece: { currentX: number; currentY: number },
   emptyPiece: EmptyPiece
@@ -35,6 +37,7 @@ const isAdjacent = (
   );
 };
 
+// Move the clicked piece to the empty piece's position
 const movePiece = (
   prevPieces: Piece[],
   clickedPiece: Piece,
@@ -47,8 +50,39 @@ const movePiece = (
   );
 };
 
+// Shuffle the pieces to create a solvable puzzle
+const shufflePieces = ({
+  pieces,
+  emptyPiece,
+  shuffleMoves = 100,
+}: {
+  pieces: Piece[];
+  emptyPiece: EmptyPiece;
+  shuffleMoves?: number;
+}) => {
+  let tempPieces = [...pieces];
+  let tempEmptyPiece = { ...emptyPiece };
+
+  for (let i = 0; i < shuffleMoves; i++) {
+    // Get adjacent pieces to the empty piece
+    const adjacentPieces = tempPieces.filter((piece) =>
+      isAdjacent(piece, tempEmptyPiece)
+    );
+
+    // Randomly select one of the adjacent pieces to move
+    const pieceToMove =
+      adjacentPieces[Math.floor(Math.random() * adjacentPieces.length)];
+
+    // Move the selected piece to the empty piece's position
+    tempPieces = movePiece(tempPieces, pieceToMove, tempEmptyPiece);
+    tempEmptyPiece = { x: pieceToMove.currentX, y: pieceToMove.currentY };
+  }
+
+  return { shuffledPieces: tempPieces, newEmptyPiece: tempEmptyPiece };
+};
+
 export default function Game() {
-  const [imageId, setImageId] = useState("0");
+  const [imageId, setImageId] = useState("1");
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [emptyPiece, setEmptyPiece] = useState<EmptyPiece>({ x: 3, y: 3 });
   const [solved, setSolved] = useState(false);
@@ -82,24 +116,32 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (imageUrl) {
-      const newPieces: Piece[] = [];
-      for (let y = 0; y < gridSize; y++) {
-        for (let x = 0; x < gridSize; x++) {
-          if (x !== emptyPiece.x || y !== emptyPiece.y) {
-            newPieces.push({
-              id: y * gridSize + x,
-              currentX: x,
-              currentY: y,
-              originalX: x,
-              originalY: y,
-            });
-          }
+    // Initialize pieces in a solved state
+    const newPieces: Piece[] = [];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        // Exclude the empty piece's initial position
+        if (!(x === gridSize - 1 && y === gridSize - 1)) {
+          newPieces.push({
+            id: y * gridSize + x,
+            currentX: x,
+            currentY: y,
+            originalX: x,
+            originalY: y,
+          });
         }
       }
-      setPieces(newPieces);
     }
-  }, [imageUrl]);
+
+    // Shuffle pieces
+    const { shuffledPieces, newEmptyPiece } = shufflePieces({
+      pieces: newPieces,
+      emptyPiece,
+      shuffleMoves: 2,
+    });
+    setPieces(shuffledPieces);
+    setEmptyPiece(newEmptyPiece);
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
