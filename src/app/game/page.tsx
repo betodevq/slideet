@@ -29,9 +29,7 @@ export default function Game() {
   const containerSize = 500;
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [moveCount, setMoveCount] = useState(0);
-
   const [timePlayed, setTimePlayed] = useState(0);
 
   useEffect(() => {
@@ -72,40 +70,47 @@ export default function Game() {
     }
   }, [isLoading, solved]);
 
+  useEffect(() => {
+    if (solved) {
+      router.push(
+        `/game-over?moves=${moveCount}&time=${timePlayed}&imageUrl=${encodeURIComponent(
+          imageUrl || ""
+        )}`
+      );
+    }
+  }, [solved, moveCount, timePlayed, imageUrl, router]);
+
   const handlePieceClick = (clickedPiece: Piece) => {
     if (isAdjacent(clickedPiece, emptyPiece)) {
       setPieces((prevPieces) => {
         const newPieces = movePiece(prevPieces, clickedPiece, emptyPiece);
-        setTimeout(() => {
-          if (isPuzzleSolved(newPieces)) {
-            setSolved(true);
-            console.log("Congratulations! You solved the puzzle!");
-          }
-        }, 100);
-
+        if (isPuzzleSolved(newPieces)) {
+          setSolved(true);
+        }
         return newPieces;
       });
 
       setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
-      // Increment move count
       setMoveCount((prevCount) => prevCount + 1);
     }
   };
 
-  if (isLoading) return <div>Processing image...</div>;
-  if (error) return <div>{error}</div>;
+  if (isLoading)
+    return <div className="text-center py-4">Processing image...</div>;
+  if (error)
+    return <div className="text-center py-4 text-red-500">{error}</div>;
   if (!imageUrl) return null;
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex justify-between w-full mb-4">
+    <div className="flex flex-col items-center w-full max-w-4xl mx-auto px-4">
+      <div className="flex justify-between w-full mb-4 text-sm sm:text-base">
         <div>Moves: {moveCount}</div>
         <div>
           Time: {Math.floor(timePlayed / 60)}:
           {(timePlayed % 60).toString().padStart(2, "0")}
         </div>
       </div>
-      <div className="flex gap-8">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
         <PuzzleGrid
           gridSize={gridSize}
           containerSize={containerSize}
@@ -115,7 +120,7 @@ export default function Game() {
           solved={solved}
           onPieceClick={handlePieceClick}
         />
-        <div className="w-64 h-64">
+        <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64">
           <img
             src={imageUrl}
             alt="Puzzle Reference"
