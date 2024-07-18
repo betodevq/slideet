@@ -16,6 +16,7 @@ export default function Game() {
     }[]
   >([]);
   const [emptyPiece, setEmptyPiece] = useState({ x: 3, y: 3 });
+  const [solved, setSolved] = useState(false);
   const gridSize = 4;
   const containerSize = 384;
   const pieceSize = containerSize / gridSize;
@@ -25,6 +26,21 @@ export default function Game() {
     isLoading,
     error,
   } = trpc.game.getImageUrl.useQuery({ imageId });
+
+  const isPuzzleSolved = (
+    pieces: {
+      id: number;
+      currentX: number;
+      currentY: number;
+      originalX: number;
+      originalY: number;
+    }[]
+  ) => {
+    return pieces.every(
+      (piece) =>
+        piece.currentX === piece.originalX && piece.currentY === piece.originalY
+    );
+  };
 
   const isAdjacent = useCallback(
     (
@@ -40,6 +56,34 @@ export default function Game() {
     []
   );
 
+  const movePiece = ({
+    prevPieces,
+    clickedPiece,
+    emptyPiece,
+  }: {
+    prevPieces: {
+      id: number;
+      currentX: number;
+      currentY: number;
+      originalX: number;
+      originalY: number;
+    }[];
+    clickedPiece: {
+      id: number;
+      currentX: number;
+      currentY: number;
+      originalX: number;
+      originalY: number;
+    };
+    emptyPiece: { x: number; y: number };
+  }) => {
+    return prevPieces.map((piece) =>
+      piece.id === clickedPiece.id
+        ? { ...piece, currentX: emptyPiece.x, currentY: emptyPiece.y }
+        : piece
+    );
+  };
+
   const handlePieceClick = useCallback(
     (clickedPiece: {
       id: number;
@@ -49,17 +93,23 @@ export default function Game() {
       originalY: number;
     }) => {
       if (isAdjacent(clickedPiece, emptyPiece)) {
-        setPieces((prevPieces) =>
-          prevPieces.map((piece) =>
-            piece.id === clickedPiece.id
-              ? { ...piece, currentX: emptyPiece.x, currentY: emptyPiece.y }
-              : piece
-          )
-        );
+        setPieces((prevPieces) => {
+          const newPieces = movePiece({ prevPieces, clickedPiece, emptyPiece });
+          // Check if the puzzle is solved after the move
+          setTimeout(() => {
+            if (isPuzzleSolved(newPieces)) {
+              setSolved(true);
+              console.log("Congratulations! You solved the puzzle!");
+            }
+          }, 100);
+
+          return newPieces;
+        });
+
         setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
       }
     },
-    [emptyPiece, isAdjacent]
+    [emptyPiece, isAdjacent, isPuzzleSolved]
   );
 
   useEffect(() => {
@@ -80,7 +130,7 @@ export default function Game() {
       }
       setPieces(newPieces);
     }
-  }, [imageUrl, gridSize, emptyPiece.x, emptyPiece.y]);
+  }, [imageUrl, gridSize]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -97,8 +147,8 @@ export default function Game() {
           `grid grid-cols-4 grid-cols-${gridSize} gap-[2px] size-96 border-2 border-black`
         )}
       >
-        {[...Array(gridSize)].map((_, x) =>
-          [...Array(gridSize)].map((_, y) => {
+        {[...Array(gridSize)].map((_, y) =>
+          [...Array(gridSize)].map((_, x) => {
             const piece = pieces.find(
               (p) => p.currentX === x && p.currentY === y
             );
@@ -107,14 +157,14 @@ export default function Game() {
             return (
               <div
                 key={`${x}-${y}`}
-                onClick={() => piece && handlePieceClick(piece)}
+                onClick={() => !solved && piece && handlePieceClick(piece)}
                 className={clsx(
                   "border-white border flex items-center justify-center cursor-pointer",
                   `w-[${pieceSize}px] h-[${pieceSize}px]`
                 )}
                 style={{
                   cursor:
-                    piece && isAdjacent(piece, emptyPiece)
+                    piece && isAdjacent(piece, emptyPiece) && !solved
                       ? "pointer"
                       : "default",
                   backgroundImage: isEmpty ? "none" : `url(${imageUrl})`,
