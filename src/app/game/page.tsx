@@ -1,21 +1,56 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import clsx from "clsx";
 
+interface Piece {
+  id: number;
+  currentX: number;
+  currentY: number;
+  originalX: number;
+  originalY: number;
+}
+
+interface EmptyPiece {
+  x: number;
+  y: number;
+}
+
+const isPuzzleSolved = (pieces: Piece[]) => {
+  return pieces.every(
+    (piece) =>
+      piece.currentX === piece.originalX && piece.currentY === piece.originalY
+  );
+};
+
+const isAdjacent = (
+  piece: { currentX: number; currentY: number },
+  emptyPiece: EmptyPiece
+) => {
+  return (
+    Math.abs(piece.currentX - emptyPiece.x) +
+      Math.abs(piece.currentY - emptyPiece.y) ===
+    1
+  );
+};
+
+const movePiece = (
+  prevPieces: Piece[],
+  clickedPiece: Piece,
+  emptyPiece: EmptyPiece
+): Piece[] => {
+  return prevPieces.map((piece) =>
+    piece.id === clickedPiece.id
+      ? { ...piece, currentX: emptyPiece.x, currentY: emptyPiece.y }
+      : piece
+  );
+};
+
 export default function Game() {
   const [imageId, setImageId] = useState("0");
-  const [pieces, setPieces] = useState<
-    {
-      id: number;
-      currentX: number;
-      currentY: number;
-      originalX: number;
-      originalY: number;
-    }[]
-  >([]);
-  const [emptyPiece, setEmptyPiece] = useState({ x: 3, y: 3 });
+  const [pieces, setPieces] = useState<Piece[]>([]);
+  const [emptyPiece, setEmptyPiece] = useState<EmptyPiece>({ x: 3, y: 3 });
   const [solved, setSolved] = useState(false);
   const gridSize = 4;
   const containerSize = 384;
@@ -27,94 +62,28 @@ export default function Game() {
     error,
   } = trpc.game.getImageUrl.useQuery({ imageId });
 
-  const isPuzzleSolved = (
-    pieces: {
-      id: number;
-      currentX: number;
-      currentY: number;
-      originalX: number;
-      originalY: number;
-    }[]
-  ) => {
-    return pieces.every(
-      (piece) =>
-        piece.currentX === piece.originalX && piece.currentY === piece.originalY
-    );
+  const handlePieceClick = (clickedPiece: Piece) => {
+    if (isAdjacent(clickedPiece, emptyPiece)) {
+      setPieces((prevPieces) => {
+        const newPieces = movePiece(prevPieces, clickedPiece, emptyPiece);
+        // Check if the puzzle is solved after the move
+        setTimeout(() => {
+          if (isPuzzleSolved(newPieces)) {
+            setSolved(true);
+            console.log("Congratulations! You solved the puzzle!");
+          }
+        }, 100);
+
+        return newPieces;
+      });
+
+      setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
+    }
   };
-
-  const isAdjacent = useCallback(
-    (
-      piece: { currentX: number; currentY: number },
-      emptyPiece: { x: number; y: number }
-    ) => {
-      return (
-        Math.abs(piece.currentX - emptyPiece.x) +
-          Math.abs(piece.currentY - emptyPiece.y) ===
-        1
-      );
-    },
-    []
-  );
-
-  const movePiece = ({
-    prevPieces,
-    clickedPiece,
-    emptyPiece,
-  }: {
-    prevPieces: {
-      id: number;
-      currentX: number;
-      currentY: number;
-      originalX: number;
-      originalY: number;
-    }[];
-    clickedPiece: {
-      id: number;
-      currentX: number;
-      currentY: number;
-      originalX: number;
-      originalY: number;
-    };
-    emptyPiece: { x: number; y: number };
-  }) => {
-    return prevPieces.map((piece) =>
-      piece.id === clickedPiece.id
-        ? { ...piece, currentX: emptyPiece.x, currentY: emptyPiece.y }
-        : piece
-    );
-  };
-
-  const handlePieceClick = useCallback(
-    (clickedPiece: {
-      id: number;
-      currentX: number;
-      currentY: number;
-      originalX: number;
-      originalY: number;
-    }) => {
-      if (isAdjacent(clickedPiece, emptyPiece)) {
-        setPieces((prevPieces) => {
-          const newPieces = movePiece({ prevPieces, clickedPiece, emptyPiece });
-          // Check if the puzzle is solved after the move
-          setTimeout(() => {
-            if (isPuzzleSolved(newPieces)) {
-              setSolved(true);
-              console.log("Congratulations! You solved the puzzle!");
-            }
-          }, 100);
-
-          return newPieces;
-        });
-
-        setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
-      }
-    },
-    [emptyPiece, isAdjacent, isPuzzleSolved]
-  );
 
   useEffect(() => {
     if (imageUrl) {
-      const newPieces = [];
+      const newPieces: Piece[] = [];
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
           if (x !== emptyPiece.x || y !== emptyPiece.y) {
@@ -130,13 +99,13 @@ export default function Game() {
       }
       setPieces(newPieces);
     }
-  }, [imageUrl, gridSize]);
+  }, [imageUrl]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
+    <div className="h-full flex flex-col justify-center items-center">
       <h1>Sliding Puzzle Game</h1>
       <div
         style={{
