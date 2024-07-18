@@ -8,6 +8,7 @@ import {
   Piece,
   shufflePieces,
   initializePieces,
+  isAdjacent,
 } from "@/utils/puzzle";
 import { processImage } from "@/utils/imageProcessing";
 import PuzzleGrid from "@/components/PuzzleGrid";
@@ -42,7 +43,7 @@ export default function Game() {
           const { shuffledPieces, newEmptyPiece } = shufflePieces({
             pieces: newPieces,
             emptyPiece: { x: gridSize - 1, y: gridSize - 1 },
-            shuffleMoves: 100,
+            shuffleMoves: 2,
           });
           setPieces(shuffledPieces);
           setEmptyPiece(newEmptyPiece);
@@ -58,17 +59,21 @@ export default function Game() {
   }, [encodedImageUrl, router, gridSize]);
 
   const handlePieceClick = (clickedPiece: Piece) => {
-    setPieces((prevPieces) => {
-      const newPieces = movePiece(prevPieces, clickedPiece, emptyPiece);
-      setTimeout(() => {
-        if (isPuzzleSolved(newPieces)) {
-          setSolved(true);
-          console.log("Congratulations! You solved the puzzle!");
-        }
-      }, 100);
-      return newPieces;
-    });
-    setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
+    if (isAdjacent(clickedPiece, emptyPiece)) {
+      setPieces((prevPieces) => {
+        const newPieces = movePiece(prevPieces, clickedPiece, emptyPiece);
+        setTimeout(() => {
+          if (isPuzzleSolved(newPieces)) {
+            setSolved(true);
+            console.log("Congratulations! You solved the puzzle!");
+          }
+        }, 100);
+
+        return newPieces;
+      });
+
+      setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
+    }
   };
 
   if (isLoading) return <div>Processing image...</div>;

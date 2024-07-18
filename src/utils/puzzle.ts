@@ -54,22 +54,34 @@ export const shufflePieces = ({
   emptyPiece: EmptyPiece;
   shuffleMoves?: number;
 }) => {
-  let tempPieces = [...pieces];
-  let tempEmptyPiece = { ...emptyPiece };
+  const shuffle = () => {
+    let tempPieces = [...pieces];
+    let tempEmptyPiece = { ...emptyPiece };
 
-  for (let i = 0; i < shuffleMoves; i++) {
-    // Get adjacent pieces to the empty piece
-    const adjacentPieces = tempPieces.filter((piece) =>
-      isAdjacent(piece, tempEmptyPiece)
-    );
+    for (let i = 0; i < shuffleMoves; i++) {
+      // Get adjacent pieces to the empty piece
+      const adjacentPieces = tempPieces.filter((piece) =>
+        isAdjacent(piece, tempEmptyPiece)
+      );
 
-    // Randomly select one of the adjacent pieces to move
-    const pieceToMove =
-      adjacentPieces[Math.floor(Math.random() * adjacentPieces.length)];
+      // Randomly select one of the adjacent pieces to move
+      const pieceToMove =
+        adjacentPieces[Math.floor(Math.random() * adjacentPieces.length)];
 
-    // Move the selected piece to the empty piece's position
-    tempPieces = movePiece(tempPieces, pieceToMove, tempEmptyPiece);
-    tempEmptyPiece = { x: pieceToMove.currentX, y: pieceToMove.currentY };
+      // Move the selected piece to the empty piece's position
+      tempPieces = movePiece(tempPieces, pieceToMove, tempEmptyPiece);
+      tempEmptyPiece = { x: pieceToMove.currentX, y: pieceToMove.currentY };
+    }
+
+    return { tempPieces, tempEmptyPiece };
+  };
+
+  let { tempPieces, tempEmptyPiece } = shuffle();
+
+  // Check if the puzzle is solved after shuffling
+  // If it is, shuffle again until it's not solved
+  while (isPuzzleSolved(tempPieces)) {
+    ({ tempPieces, tempEmptyPiece } = shuffle());
   }
 
   return { shuffledPieces: tempPieces, newEmptyPiece: tempEmptyPiece };
