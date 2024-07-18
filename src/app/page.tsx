@@ -26,10 +26,7 @@ export default function Home() {
   if (error) return <div>Error loading images: {error.message}</div>;
 
   return (
-    <div className=" max-w-screen-md p-8 mx-auto flex flex-col justify-center ">
-      <h1 className="text-6xl md:text-8xl font-bold mb-6 text-center">
-        Puzzlee
-      </h1>
+    <div className="flex flex-col justify-center">
       <h2 className="text-2xl font-bold mb-4 text-center">Select an image:</h2>
       <div className=" flex-wrap md:flex-nowrap flex gap-6 justify-center">
         {images?.map((image, index) => (

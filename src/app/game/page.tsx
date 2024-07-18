@@ -30,6 +30,10 @@ export default function Game() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [moveCount, setMoveCount] = useState(0);
+
+  const [timePlayed, setTimePlayed] = useState(0);
+
   useEffect(() => {
     if (!encodedImageUrl) {
       router.push("/");
@@ -58,6 +62,16 @@ export default function Game() {
     }
   }, [encodedImageUrl, router, gridSize]);
 
+  useEffect(() => {
+    if (!isLoading && !solved) {
+      const timer = setInterval(() => {
+        setTimePlayed((prevTime) => prevTime + 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isLoading, solved]);
+
   const handlePieceClick = (clickedPiece: Piece) => {
     if (isAdjacent(clickedPiece, emptyPiece)) {
       setPieces((prevPieces) => {
@@ -73,6 +87,8 @@ export default function Game() {
       });
 
       setEmptyPiece({ x: clickedPiece.currentX, y: clickedPiece.currentY });
+      // Increment move count
+      setMoveCount((prevCount) => prevCount + 1);
     }
   };
 
@@ -81,17 +97,32 @@ export default function Game() {
   if (!imageUrl) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-6">Sliding Puzzle Game</h1>
-      <PuzzleGrid
-        gridSize={gridSize}
-        containerSize={containerSize}
-        pieces={pieces}
-        emptyPiece={emptyPiece}
-        imageUrl={imageUrl}
-        solved={solved}
-        onPieceClick={handlePieceClick}
-      />
+    <div className="flex flex-col items-center">
+      <div className="flex justify-between w-full mb-4">
+        <div>Moves: {moveCount}</div>
+        <div>
+          Time: {Math.floor(timePlayed / 60)}:
+          {(timePlayed % 60).toString().padStart(2, "0")}
+        </div>
+      </div>
+      <div className="flex gap-8">
+        <PuzzleGrid
+          gridSize={gridSize}
+          containerSize={containerSize}
+          pieces={pieces}
+          emptyPiece={emptyPiece}
+          imageUrl={imageUrl}
+          solved={solved}
+          onPieceClick={handlePieceClick}
+        />
+        <div className="w-64 h-64">
+          <img
+            src={imageUrl}
+            alt="Puzzle Reference"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
     </div>
   );
 }

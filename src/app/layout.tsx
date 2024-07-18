@@ -18,7 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider>{children}</Provider>
+        <Provider>
+          <section className="max-w-screen-lg p-8 mx-auto">
+            <h1 className="text-6xl md:text-8xl font-bold mb-6 text-center">
+              Puzzlee
+            </h1>
+            {children}
+          </section>
+        </Provider>
       </body>
     </html>
   );
