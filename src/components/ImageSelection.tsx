@@ -1,3 +1,4 @@
+"use client";
 //Libraries
 import { FC } from "react";
 
