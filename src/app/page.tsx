@@ -94,6 +94,11 @@ export default function Home() {
             "imageQualityWarning",
             "** Quality may be affected if the image is too small."
           )}
+          <br />
+          {getLabel(
+            "experimentalFeatureWarning",
+            "*** This feature is experimental and is likely to encounter issues."
+          )}
         </p>
       </form>
     </div>

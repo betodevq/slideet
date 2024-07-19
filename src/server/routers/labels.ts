@@ -21,6 +21,8 @@ const labels = {
     processingImage: "Processing image...",
     errorProcessingImage:
       "Failed to load or process the image. Please try another image.",
+    experimentalFeatureWarning:
+      "*** This feature is experimental and is likely to encounter issues.",
     moves: "Moves:",
     time: "Time:",
     backToMenu: "Back to Menu",
@@ -45,6 +47,8 @@ const labels = {
     processingImage: "Procesando imagen...",
     errorProcessingImage:
       "Error al cargar o procesar la imagen. Por favor, intenta con otra imagen.",
+    experimentalFeatureWarning:
+      "*** Esta función es experimental y es probable que encuentres problemas.",
     moves: "Movimientos:",
     time: "Tiempo:",
     backToMenu: "Volver al menú",

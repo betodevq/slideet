@@ -12,8 +12,6 @@ export function useLabels() {
   const { data, isLoading, error } = trpc.labels.getGameLabels.useQuery(
     { language },
     {
-      staleTime: 1000 * 60 * 120,
-      cacheTime: 1000 * 60 * 120,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -27,9 +25,8 @@ export function useLabels() {
     }
   }, [data]);
 
-  const getLabel = (key: string, fallback: string = "") => {
-    return labels?.[key] || fallback;
-  };
+  const getLabel = (key: string, fallback: string = "") =>
+    labels?.[key] || fallback;
 
   return { getLabel, isLoading, error };
 }

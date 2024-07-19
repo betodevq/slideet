@@ -27,7 +27,7 @@ import { useLabels } from "@/hooks/useLabels";
 
 export default function Game() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean | null>(null);
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [timePlayed, setTimePlayed] = useState(0);
@@ -66,12 +66,7 @@ export default function Game() {
         setPieces(shuffledPieces);
         setEmptyPiece(newEmptyPiece);
       } catch (err) {
-        setError(
-          getLabel(
-            "errorProcessingImage",
-            "Failed to load or process the image. Please try another image."
-          )
-        );
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -119,7 +114,14 @@ export default function Game() {
       </div>
     );
   if (error)
-    return <div className="text-center py-4 text-red-500">{error}</div>;
+    return (
+      <div className="text-center py-4 text-red-500">
+        {getLabel(
+          "errorProcessingImage",
+          "Failed to load or process the image. Please try another image."
+        )}
+      </div>
+    );
   if (!imageUrl) return null;
 
   return (
