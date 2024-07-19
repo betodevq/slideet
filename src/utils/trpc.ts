@@ -7,7 +7,7 @@ function getBaseUrl() {
     return "";
   }
 
-  if (process.env.VERCEL_URL) {
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
     return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
   }
 
