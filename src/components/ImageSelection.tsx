@@ -32,6 +32,7 @@ const ImageSelection: FC<ImageSelectionProps> = ({
               src={image.url}
               alt={getLabel("puzzleImageAlt", "Puzzle image") + ` ${index + 1}`}
               width={500}
+              loading="lazy"
               height={500}
               className="rounded-lg shadow-lg"
             />

@@ -24,6 +24,7 @@ const labels = {
       "Failed to load or process the image. Please try another image.",
     moves: "Moves:",
     time: "Time:",
+    backToMenu: "Back to Menu",
   },
   es: {
     gameTitle: "Slideet",
@@ -47,6 +48,7 @@ const labels = {
       "Error al cargar o procesar la imagen. Por favor, intenta con otra imagen.",
     moves: "Movimientos:",
     time: "Tiempo:",
+    backToMenu: "Volver al menú",
   },
 };
 
