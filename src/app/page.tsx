@@ -13,6 +13,7 @@ import { trpc } from "@/utils/trpc";
 import { useLabels } from "@/hooks/useLabels";
 
 export default function Home() {
+  const [customUrl, setCustomUrl] = useState("");
   const router = useRouter();
   const { getLabel, isLoading: labelsLoading } = useLabels();
   const {
@@ -22,13 +23,11 @@ export default function Home() {
     isFetching,
   } = trpc.game.getImages.useQuery(undefined, {
     staleTime: 1000 * 60 * 120,
-    gcTime: 1000 * 60 * 120,
+    cacheTime: 1000 * 60 * 120,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-
-  const [customUrl, setCustomUrl] = useState("");
 
   const handleImageSelect = (imageUrl: string) => {
     const encodedUrl = encodeURIComponent(imageUrl);

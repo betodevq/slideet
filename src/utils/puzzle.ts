@@ -1,5 +1,6 @@
 export const GRID_SIZE = 4;
 export const CONTAINER_PX_SIZE = 500;
+export const SHUFFLE_MOVES = 100;
 export const PIECE_SIZE = CONTAINER_PX_SIZE / GRID_SIZE;
 
 export interface Piece {

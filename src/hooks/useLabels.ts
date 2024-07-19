@@ -13,7 +13,7 @@ export function useLabels() {
     { language },
     {
       staleTime: 1000 * 60 * 120,
-      gcTime: 1000 * 60 * 120,
+      cacheTime: 1000 * 60 * 120,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
