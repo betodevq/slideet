@@ -1,12 +1,12 @@
 "use client";
 
-// Libraries
+//Libraries
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 // Components
-import PuzzleGrid from "@/components/PuzzleGrid";
 import Image from "next/image";
+import PuzzleGrid from "@/components/PuzzleGrid";
 
 // Utils
 import { processImage } from "@/utils/imageProcessing";
@@ -19,7 +19,11 @@ import {
   initializePieces,
   isAdjacent,
   GRID_SIZE,
+  SHUFFLE_MOVES,
 } from "@/utils/puzzle";
+
+// Hooks
+import { useLabels } from "@/hooks/useLabels";
 
 export default function Game() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -37,33 +41,44 @@ export default function Game() {
     y: GRID_SIZE - 1,
   });
 
+  const { getLabel } = useLabels();
+
   useEffect(() => {
-    if (!encodedImageUrl) {
-      router.push("/");
-    } else {
-      const url = decodeURIComponent(encodedImageUrl);
-      setIsLoading(true);
-      processImage(url)
-        .then((processedImageUrl) => {
-          setImageUrl(processedImageUrl);
-          const newPieces = initializePieces(GRID_SIZE);
-          const { shuffledPieces, newEmptyPiece } = shufflePieces({
-            pieces: newPieces,
-            emptyPiece: { x: GRID_SIZE - 1, y: GRID_SIZE - 1 },
-            shuffleMoves: 2,
-          });
-          setPieces(shuffledPieces);
-          setEmptyPiece(newEmptyPiece);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          setError(
-            "Failed to load or process the image. Please try another image."
-          );
-          setIsLoading(false);
+    const loadImage = async () => {
+      if (!encodedImageUrl) {
+        router.push("/");
+        return;
+      }
+
+      try {
+        const url = decodeURIComponent(encodedImageUrl);
+        setIsLoading(true);
+        const processedImageUrl = await processImage(url);
+        setImageUrl(processedImageUrl);
+
+        const newPieces = initializePieces(GRID_SIZE);
+        const { shuffledPieces, newEmptyPiece } = shufflePieces({
+          pieces: newPieces,
+          emptyPiece: { x: GRID_SIZE - 1, y: GRID_SIZE - 1 },
+          shuffleMoves: SHUFFLE_MOVES,
         });
-    }
-  }, [encodedImageUrl, router, GRID_SIZE]);
+
+        setPieces(shuffledPieces);
+        setEmptyPiece(newEmptyPiece);
+      } catch (err) {
+        setError(
+          getLabel(
+            "failedToLoadImage",
+            "Failed to load or process the image. Please try another image."
+          )
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadImage();
+  }, [encodedImageUrl, router]);
 
   useEffect(() => {
     if (!isLoading && !solved) {
@@ -76,10 +91,10 @@ export default function Game() {
   }, [isLoading, solved]);
 
   useEffect(() => {
-    if (solved) {
+    if (solved && imageUrl) {
       router.push(
         `/game-over?moves=${moveCount}&time=${timePlayed}&imageUrl=${encodeURIComponent(
-          imageUrl || ""
+          imageUrl
         )}`
       );
     }
@@ -101,7 +116,11 @@ export default function Game() {
   };
 
   if (isLoading)
-    return <div className="text-center py-4">Processing image...</div>;
+    return (
+      <div className="text-center py-4">
+        {getLabel("processingImage", "Processing image...")}
+      </div>
+    );
   if (error)
     return <div className="text-center py-4 text-red-500">{error}</div>;
   if (!imageUrl) return null;
@@ -109,9 +128,11 @@ export default function Game() {
   return (
     <div className="flex flex-col items-center w-full max-w-4xl mx-auto px-4">
       <div className="flex justify-between w-full mb-4 text-sm sm:text-base">
-        <div>Moves: {moveCount}</div>
         <div>
-          Time: {Math.floor(timePlayed / 60)}:
+          {getLabel("moves", "Moves:")} {moveCount}
+        </div>
+        <div>
+          {getLabel("time", "Time:")} {Math.floor(timePlayed / 60)}:
           {(timePlayed % 60).toString().padStart(2, "0")}
         </div>
       </div>
@@ -128,7 +149,7 @@ export default function Game() {
             width={500}
             height={500}
             src={imageUrl}
-            alt="Puzzle Reference"
+            alt={getLabel("puzzleReferenceAlt", "Puzzle Reference")}
             className="w-full h-full object-cover"
           />
         </div>

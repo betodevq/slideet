@@ -1,5 +1,5 @@
 // Libraries
-import React from "react";
+import { FC } from "react";
 import clsx from "clsx";
 
 // Components
@@ -16,7 +16,7 @@ interface PuzzleGridProps {
   onPieceClick: (piece: Piece) => void;
 }
 
-const PuzzleGrid: React.FC<PuzzleGridProps> = ({
+const PuzzleGrid: FC<PuzzleGridProps> = ({
   pieces,
   emptyPiece,
   imageUrl,

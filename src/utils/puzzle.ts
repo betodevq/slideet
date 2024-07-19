@@ -15,7 +15,6 @@ export interface EmptyPiece {
   y: number;
 }
 
-// Check if the puzzle is solved
 export const isPuzzleSolved = (pieces: Piece[]) => {
   return pieces.every(
     (piece) =>

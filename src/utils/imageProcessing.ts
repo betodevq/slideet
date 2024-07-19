@@ -1,3 +1,11 @@
+/**
+ * Resizes an image to fit within a 500x500 canvas, maintaining its aspect ratio.
+ * If the image is already 500x500, returns the original URL.
+ * Otherwise, returns a data URL of the resized image in JPEG format.
+ *
+ * @param {string} url - The URL of the image to process.
+ * @returns {Promise<string>} A promise that resolves with the original or resized image URL.
+ */
 export const processImage = (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();

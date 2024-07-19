@@ -9,9 +9,4 @@ export const gameRouter = router({
       { id: "2", url: "/images/image2.jpeg" },
     ];
   }),
-  getImageUrl: publicProcedure
-    .input(z.object({ imageId: z.string() }))
-    .query(({ input }) => {
-      return `/images/image${input.imageId}.jpeg`;
-    }),
 });

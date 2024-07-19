@@ -1,5 +1,5 @@
 // Libraries
-import React from "react";
+import { FC } from "react";
 import clsx from "clsx";
 
 // Utils
@@ -20,7 +20,7 @@ interface PuzzlePieceProps {
   onPieceClick: (piece: Piece) => void;
 }
 
-const PuzzlePiece: React.FC<PuzzlePieceProps> = ({
+const PuzzlePiece: FC<PuzzlePieceProps> = ({
   piece,
   isEmpty,
   emptyPiece,
@@ -41,7 +41,7 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({
             ? "pointer"
             : "default",
         backgroundImage: isEmpty ? "none" : `url(${imageUrl})`,
-        backgroundColor: isEmpty ? "salmon" : "transparent",
+        backgroundColor: isEmpty ? "lightgray" : "transparent",
         backgroundSize: `${CONTAINER_PX_SIZE}px ${CONTAINER_PX_SIZE}px`,
         backgroundPosition: piece
           ? `${-piece.originalX * PIECE_SIZE}px ${

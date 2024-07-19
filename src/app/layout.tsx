@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Provider from "@/components/Provider";
+import Providers from "@/components/Providers";
+import LanguageSelector from "@/components/LanguageSelector";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,14 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider>
+        <Providers>
           <section className="max-w-screen-lg p-8 mx-auto">
+            <LanguageSelector />
             <h1 className="text-6xl md:text-8xl font-bold mb-6 text-center">
               Slideet
             </h1>
             {children}
           </section>
-        </Provider>
+        </Providers>
       </body>
     </html>
   );
