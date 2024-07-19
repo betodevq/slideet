@@ -11,7 +11,7 @@ const labels = {
     imageSizeWarning:
       "* If your image is bigger than 500x500, we will cut it for you.",
     imageQualityWarning:
-      "** Quality may be affected if the image is too small.",
+      "** Quality may be affected if the image is too small or not squared.",
     loadingImages: "Loading images...",
     errorLoadingImages: "Error loading images: ",
     refreshingImages: "Refreshing image list...",
@@ -34,7 +34,7 @@ const labels = {
     imageSizeWarning:
       "* Si tu imagen es más grande que 500x500, la recortaremos por ti.",
     imageQualityWarning:
-      "** La calidad puede verse afectada si la imagen es demasiado pequeña.",
+      "** La calidad puede verse afectada si la imagen es demasiado pequeña o no es cuadrada.",
     loadingImages: "Cargando imágenes...",
     errorLoadingImages: "Error al cargar imágenes: ",
     refreshingImages: "Actualizando lista de imágenes...",

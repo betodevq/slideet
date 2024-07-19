@@ -68,7 +68,7 @@ export default function Game() {
       } catch (err) {
         setError(
           getLabel(
-            "failedToLoadImage",
+            "errorProcessingImage",
             "Failed to load or process the image. Please try another image."
           )
         );
@@ -92,11 +92,8 @@ export default function Game() {
 
   useEffect(() => {
     if (solved && imageUrl) {
-      router.push(
-        `/game-over?moves=${moveCount}&time=${timePlayed}&imageUrl=${encodeURIComponent(
-          imageUrl
-        )}`
-      );
+      sessionStorage.setItem("lastGameImage", imageUrl);
+      router.push(`/game-over?moves=${moveCount}&time=${timePlayed}`);
     }
   }, [solved, moveCount, timePlayed, imageUrl, router]);
 

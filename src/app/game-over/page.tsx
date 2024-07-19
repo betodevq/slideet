@@ -19,9 +19,14 @@ export default function GameOver() {
 
   const moves = searchParams.get("moves") ?? "0";
   const time = searchParams.get("time") ?? "0";
-  const imageUrl = searchParams.get("imageUrl") ?? "";
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    const storedImageUrl = sessionStorage.getItem("lastGameImage");
+    if (storedImageUrl) {
+      setImageUrl(storedImageUrl);
+      sessionStorage.removeItem("lastGameImage");
+    }
     const updateWindowSize = () => {
       setWindowSize({
         width: window.innerWidth,
@@ -64,7 +69,7 @@ export default function GameOver() {
           <Image
             width={500}
             height={500}
-            src={decodeURIComponent(imageUrl)}
+            src={imageUrl}
             alt={getLabel("completedPuzzleAlt", "Completed Puzzle")}
             className="w-64 h-64 object-cover mb-6"
           />
