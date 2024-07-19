@@ -26,8 +26,11 @@ const PuzzleGrid: FC<PuzzleGridProps> = ({
 }) => {
   return (
     <div
+      style={{
+        gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
+      }}
       className={clsx(
-        `grid gap-[2px] border-2 border-black p-1 grid-cols-${GRID_SIZE} size-96 transition-all duration-500 ease-in-out`,
+        `grid gap-[2px] border-2 border-black p-1 size-96 transition-all duration-500 ease-in-out`,
         solved ? "scale-105" : "scale-100"
       )}
     >
